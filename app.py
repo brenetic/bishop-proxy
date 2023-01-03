@@ -14,7 +14,6 @@ from greeter import greeter
 app = App()
 
 import requests
-import pdb
 
 @app.middleware
 def log_request(logger, body, next):
@@ -30,9 +29,14 @@ def event_test(payload, say):
         payload = {'sub_command': sub_command, 'args': remaining}
         result = requests.post(f"{os.getenv('BISHOP_URL')}{command}", json=payload)
         if result.status_code != 200:
-            say(result.reason)
+            say(result.json()['message'])
+            return result.json()['message'], result.status_code
+
+        return 'OK', result.status_code
     except Exception as e:
-        say(f"Error posting message: {e}")
+        message =  f"Error posting message: {e}"
+        say(message)
+        return message, 400
 
 
 @app.event("app_home_opened")
@@ -61,7 +65,13 @@ def send():
             text=params["message"]
         )
         if result.status_code != 200:
-            pdb.set_trace()
+            message = "Error posting message"
+            logging.error(message)
+            return message, result.status_code
+
         logging.info(result)
+        return 'OK', result.status_code
     except Exception as e:
-        logging.error(f"Error posting message: {e}")
+        message = f"Error posting message: {e}"
+        logging.error(message)
+        return message, 400
