@@ -55,6 +55,11 @@ def slack_events():
     return handler.handle(request)
 
 
+@flask_app.route("/health", methods=["GET"])
+def health():
+    return 'OK', 200
+
+
 @flask_app.route("/send", methods=["POST"])
 def send():
     params = request.get_json()
