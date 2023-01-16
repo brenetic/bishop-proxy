@@ -23,8 +23,9 @@ def log_request(logger, body, next):
 
 @app.event("app_mention")
 def event_test(payload, say):
-    arguments = payload['text'].split(' ')
-    command, sub_command, remaining = arguments[1], arguments[2], arguments[3:]
+    arguments = payload['text'].split(' ')[1:]
+    command, sub_command, remaining = unpack_commands(arguments)
+
     try:
         payload = {'sub_command': sub_command, 'args': remaining}
         result = requests.post(f"{os.getenv('BISHOP_URL')}{command}", json=payload)
@@ -80,3 +81,13 @@ def send():
         message = f"Error posting message: {e}"
         logging.error(message)
         return message, 400
+
+
+def unpack_commands(arguments):
+    command = arguments.pop(0)
+    try:
+        sub_command = arguments.pop(0)
+    except IndexError:
+        sub_command = ''
+
+    return (command, sub_command, arguments)
