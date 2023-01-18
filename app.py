@@ -9,8 +9,6 @@ from slack_bolt.adapter.flask import SlackRequestHandler
 from dotenv import load_dotenv
 load_dotenv()
 
-from greeter import greeter
-
 app = App()
 
 import requests
@@ -22,7 +20,7 @@ def log_request(logger, body, next):
 
 
 @app.event("app_mention")
-def event_test(payload, say):
+def app_mention(payload, say):
     arguments = payload['text'].split(' ')[1:]
     command, sub_command, remaining = unpack_commands(arguments)
 
@@ -42,7 +40,7 @@ def event_test(payload, say):
 
 @app.event("app_home_opened")
 def handle_app_home_opened_events(say):
-    say(greeter.greet())
+    say('Proxy is available')
 
 
 from flask import Flask, request
