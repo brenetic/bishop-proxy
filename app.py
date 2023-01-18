@@ -27,11 +27,10 @@ def app_mention(payload, say):
     try:
         payload = {'sub_command': sub_command, 'args': remaining}
         result = requests.post(f"{os.getenv('BISHOP_URL')}{command}", json=payload)
-        if result.status_code != 200:
+        if result.status_code != 202:
             say(result.json()['message'])
-            return result.json()['message'], result.status_code
 
-        return 'OK', result.status_code
+        return result.json()['message'], result.status_code
     except Exception as e:
         message =  f"Error posting message: {e}"
         say(message)
